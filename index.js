@@ -1,20 +1,22 @@
-const bcrypt = require('bcrypt');
+const express = require('express');
+const app = express();
+const port = 3000;
 
-const hashPassword = async(pw) => {
-    const hash = await bcrypt.hash(pw, 10);
-    console.log(salt);
-    console.log(hash);
-}
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-const login = async(pw, hashedPw) => {
-    const result = await bcrypt.compare(pw, hashedPw);
+const User = require('./models/user');
 
-    if(result){
-        console.log('Login Succesfully');
-    } else {
-        console.log('Incorrect Password!');
-    }
-}
+app.get('/register', (req, res) => {
+    res.render('register')
+});
 
-hashPassword('hello'); // $2b$10$Pu6HitfHVR7ChoWyjetkLe8cVeeUCVqvXXkDYFygbi5e8N26cB9IS
-login('hello', '$2b$10$Pu6HitfHVR7ChoWyjetkLe8cVeeUCVqvXXkDYFygbi5e8N26cB9IS');
+app.get('/admin', (req, res) => {
+    res.send('Halaman ini hanya bisa diakses jika kamu login');
+});
+
+
+
+app.listen(3000, () => {
+    console.log(`Server is running on http://127.0.0.1:${port}`);
+});
