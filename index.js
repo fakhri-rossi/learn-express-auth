@@ -18,3 +18,4 @@ const login = async(pw, hashedPw) => {
 
 hashPassword('hello'); // $2b$10$Pu6HitfHVR7ChoWyjetkLe8cVeeUCVqvXXkDYFygbi5e8N26cB9IS
 login('hello', '$2b$10$Pu6HitfHVR7ChoWyjetkLe8cVeeUCVqvXXkDYFygbi5e8N26cB9IS');
+// bcrypt demo
