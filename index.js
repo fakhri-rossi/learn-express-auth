@@ -58,18 +58,11 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    
-    const user = new User({
-        username,
-        password: hashedPassword
-    });
-
+    const user = new User({ username, password });
     await user.save();
-    console.log(user);
+    req.session.user_id = user._id;
 
-    req.flash('flashMessage', 'Berhasil Register!');
-    res.redirect('/');
+    res.redirect('/admin');
 });
 
 app.get('/login', (req, res) => {
@@ -78,23 +71,13 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const user = await User.findByCredentials(username, password);
 
     if(user){
-        const isMatch = await bcrypt.compareSync(password, user.password);
-
-        if(isMatch){
-            req.session.user_id = user._id;
-            req.flash('flashMessage', 'Login Berhasil!');
-            res.redirect('/admin');
-
-        } else {
-            req.flash('flashMessage', 'Password salah!');
-            res.redirect('/login');
-        }
+        req.session.user_id = user._id;
+        res.redirect('/admin');
 
     } else {
-        req.flash('flashMessage', 'User tidak ditemukan!');
         res.redirect('/login');
     }
 });
