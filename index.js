@@ -3,8 +3,17 @@ const app = express();
 const port = 3000;
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const flash = require('connect-flash');
 
-mongoose.connect('mongodb://127.0.0.1/auth_demo');
+mongoose.connect('mongodb://127.0.0.1/auth_demo')
+    .then((result) => {
+        console.log('<< connected to mongodb >>');
+        
+    }).catch((err) => {
+        console.log('<< failed to connect mongodb >>');
+
+    });
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -14,10 +23,24 @@ app.use(express.urlencoded({
     extended: true
 }));
 
+app.use(session({
+    secret: 'secret-key',
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(flash());
+
 const User = require('./models/user');
 
+
+app.use((req, res, next) => {
+    res.locals.flashMessage = req.flash('flashMessage');
+    next();
+});
+
 app.get('/', (req, res) => {
-    res.send('homepage');
+    res.render('homepage');
 });
 
 app.get('/register', (req, res) => {
@@ -35,12 +58,42 @@ app.post('/register', async (req, res) => {
 
     await user.save();
     console.log(user);
+
+    req.flash('flashMessage', 'Berhasil Register!');
     res.redirect('/');
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+
+    if(user){
+        const isMatch = await bcrypt.compareSync(password, user.password);
+
+        if(isMatch){
+            req.flash('flashMessage', 'Login Berhasil!');
+            res.redirect('/');
+
+        } else {
+            req.flash('flashMessage', 'Password salah!');
+            res.redirect('/login');
+        }
+
+    } else {
+        req.flash('flashMessage', 'User tidak ditemukan!');
+        res.redirect('/login');
+    }
+
 });
 
 
 app.get('/admin', (req, res) => {
-    res.send('Halaman ini hanya bisa diakses jika kamu login');
+    // res.send('Halaman ini hanya bisa diakses jika kamu login');
+    res.render('homepage');
 });
 
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <style>
+        .d-none{
+            display: none;
+        }
+        .d-flex{
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; justify-content: center; align-items: center; border-radius: 25px; background-color: yellow;" class="<%= flashMessage != '' ? 'd-flex' : 'd-none' %>">
+        <h3>
+            <%= flashMessage %>
+        </h3>
+    </div>
+    <h1>Homepage</h1>
+    <h3>Links:</h3>
+    <ul>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/login">Login</a></li>
+    </ul>
+</body>
+</html>
