@@ -39,6 +39,15 @@ app.use((req, res, next) => {
     next();
 });
 
+// middleware ngecek auth sebelum masuk ke page tertentu
+const auth = (req, res, next) => {
+    if(!req.session.user_id){
+        return res.redirect('/login');
+    }
+    next();
+};
+
+
 app.get('/', (req, res) => {
     res.render('homepage');
 });
@@ -90,24 +99,20 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('/logout', (req, res) => {
-    // req.session.user_id = null; // kalo data session yg dihapus cuma user_id:
-
-    // kalo data session yg ada di backend mau dihapus semua:
+app.post('/logout', auth, (req, res) => {
     req.session.destroy(() => {
         res.redirect('/login');
     });
 });
 
-app.get('/admin', (req, res) => {
-    if(!req.session.user_id){
-        res.redirect('/login');
-    } else {
-        res.render('admin');
-    }
+app.get('/admin', auth, (req, res) => {
+    res.render('admin');
 });
 
 
+app.get('/admin/settings', auth, (req, res) => {
+    res.send(`Profile Settings: ${req.session.user_id}`);
+});
 
 app.listen(3000, () => {
     console.log(`Server is running on http://127.0.0.1:${port}`);
