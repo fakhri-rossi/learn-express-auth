@@ -75,8 +75,9 @@ app.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compareSync(password, user.password);
 
         if(isMatch){
+            req.session.user_id = user._id;
             req.flash('flashMessage', 'Login Berhasil!');
-            res.redirect('/');
+            res.redirect('/admin');
 
         } else {
             req.flash('flashMessage', 'Password salah!');
@@ -87,13 +88,15 @@ app.post('/login', async (req, res) => {
         req.flash('flashMessage', 'User tidak ditemukan!');
         res.redirect('/login');
     }
-
 });
 
 
 app.get('/admin', (req, res) => {
-    // res.send('Halaman ini hanya bisa diakses jika kamu login');
-    res.render('homepage');
+    if(!req.session.user_id){
+        res.redirect('/login');
+    } else {
+        res.send('Halaman ini hanya bisa diakses jika kamu login');
+    }
 });
 
 
