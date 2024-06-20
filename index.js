@@ -90,12 +90,20 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/logout', (req, res) => {
+    // req.session.user_id = null; // kalo data session yg dihapus cuma user_id:
+
+    // kalo data session yg ada di backend mau dihapus semua:
+    req.session.destroy(() => {
+        res.redirect('/login');
+    });
+});
 
 app.get('/admin', (req, res) => {
     if(!req.session.user_id){
         res.redirect('/login');
     } else {
-        res.send('Halaman ini hanya bisa diakses jika kamu login');
+        res.render('admin');
     }
 });
 
